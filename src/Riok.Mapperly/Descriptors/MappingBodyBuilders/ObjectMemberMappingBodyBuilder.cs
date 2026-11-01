@@ -242,7 +242,7 @@ public static class ObjectMemberMappingBodyBuilder
             return false;
         }
 
-        var existingTargetMapping = ctx.BuilderContext.FindOrBuildExistingTargetMapping(memberMappingInfo.ToTypeMappingKey());
+        var existingTargetMapping = ctx.BuilderContext.FindOrBuildExistingTargetMapping(memberMappingInfo.ToExistingTargetTypeMappingKey());
         if (existingTargetMapping is null)
             return false;
 
@@ -260,7 +260,7 @@ public static class ObjectMemberMappingBodyBuilder
             targetMemberGetter,
             memberMappingInfo
         );
-        ctx.AddMemberAssignmentMapping(memberMapping);
+        ctx.AddSourceParentNullDelegateMemberAssignmentMapping(memberMapping);
         return true;
     }
 

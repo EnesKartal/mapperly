@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Microsoft.CodeAnalysis;
 using Riok.Mapperly.Configuration;
 using Riok.Mapperly.Symbols.Members;
 
@@ -39,6 +40,22 @@ public record MemberMappingInfo(
             TargetMember.MemberWriteType,
             Configuration?.ToTypeMappingConfiguration()
         );
+    }
+
+    /// <summary>
+    /// Returns the <see cref="TypeMappingKey"/> of a mapping onto the existing <see cref="TargetMember"/>.
+    /// The nullable parents of the <see cref="SourceMember"/> are null checked before this mapping is called,
+    /// therefore only the nullability of the source member itself is relevant.
+    /// </summary>
+    public TypeMappingKey ToExistingTargetTypeMappingKey()
+    {
+        if (SourceMember?.MemberPath.Member is not { } sourceMember)
+            return ToTypeMappingKey();
+
+        var sourceType = sourceMember.IsReadNullable
+            ? sourceMember.Type.WithNullableAnnotation(NullableAnnotation.Annotated)
+            : sourceMember.Type;
+        return new TypeMappingKey(sourceType, TargetMember.MemberWriteType, Configuration?.ToTypeMappingConfiguration());
     }
 
     public string DescribeSource()

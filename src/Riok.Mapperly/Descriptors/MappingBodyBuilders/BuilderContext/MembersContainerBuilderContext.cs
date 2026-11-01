@@ -68,6 +68,27 @@ public class MembersContainerBuilderContext<T>(MappingBuilderContext builderCont
         }
     }
 
+    /// <summary>
+    /// Adds a block which only executes the <paramref name="memberMapping"/>
+    /// if the nullable parents of the source member are not null.
+    /// The source member itself is not checked and the target member is left as it is if a parent is null,
+    /// as the mapping maps onto the existing target member and handles a null source member on its own.
+    /// </summary>
+    /// <param name="memberMapping">The member mapping to be applied if the parents of the source member are not null</param>
+    public void AddSourceParentNullDelegateMemberAssignmentMapping(IMemberAssignmentMapping memberMapping)
+    {
+        var sourcePath = memberMapping.MemberInfo.SourceMember?.MemberPath;
+        var nullableParentPath = sourcePath?.ObjectReadPathNullableSubPaths().LastOrDefault();
+        if (sourcePath == null || nullableParentPath == null)
+        {
+            AddMemberAssignmentMapping(memberMapping);
+            return;
+        }
+
+        var container = GetOrCreateNullDelegateMappingForPath(new NonEmptyMemberPath(sourcePath.RootType, nullableParentPath));
+        AddMemberAssignmentMapping(container, memberMapping);
+    }
+
     private void AddMemberAssignmentMapping(IMemberAssignmentMappingContainer container, IMemberAssignmentMapping mapping)
     {
         AddNullMemberInitializers(container, mapping.MemberInfo.TargetMember);

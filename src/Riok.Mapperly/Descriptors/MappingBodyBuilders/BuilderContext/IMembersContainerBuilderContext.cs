@@ -13,4 +13,6 @@ public interface IMembersContainerBuilderContext<out T> : IMembersBuilderContext
     void AddMemberAssignmentMapping(IMemberAssignmentMapping memberMapping);
 
     void AddNullDelegateMemberAssignmentMapping(IMemberAssignmentMapping memberMapping);
+
+    void AddSourceParentNullDelegateMemberAssignmentMapping(IMemberAssignmentMapping memberMapping);
 }
